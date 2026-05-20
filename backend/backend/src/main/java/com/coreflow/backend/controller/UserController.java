@@ -4,9 +4,10 @@ import com.coreflow.backend.domain.User;
 import com.coreflow.backend.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import com.coreflow.backend.dto.UserResponseDTO;
+import com.coreflow.backend.dto.UserRequestDTO;
+import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -28,7 +29,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> create(@RequestBody User user) {
-        return ResponseEntity.ok(userService.save(user));
+    public ResponseEntity<User> create(@Valid @RequestBody UserRequestDTO dto) {
+        return ResponseEntity.ok(userService.save(dto));
     }
 }
