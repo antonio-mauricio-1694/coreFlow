@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+import com.coreflow.backend.dto.UserResponseDTO;
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -18,12 +18,12 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> findAll() {
+    public ResponseEntity<List<UserResponseDTO>> findAll() {
         return ResponseEntity.ok(userService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> findById(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.findById(id));
     }
 
