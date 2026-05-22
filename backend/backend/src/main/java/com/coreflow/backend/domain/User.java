@@ -6,7 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 @Entity
 @Table(name = "users")
 public class User {
@@ -24,6 +25,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @ManyToOne
+    @JoinColumn(name = "household_id")
+    private Household household;
+
     public User() {
     }
 
@@ -31,12 +36,14 @@ public class User {
             Long id,
             String name,
             String email,
-            String password
+            String password,
+            Household household
     ) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.household = household;
     }
 
     public Long getId() {
@@ -55,6 +62,10 @@ public class User {
         return password;
     }
 
+    public Household getHousehold() {
+        return household;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -69,5 +80,9 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setHousehold(Household household) {
+        this.household = household;
     }
 }

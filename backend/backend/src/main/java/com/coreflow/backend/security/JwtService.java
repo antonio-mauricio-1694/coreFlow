@@ -1,27 +1,55 @@
 package com.coreflow.backend.security;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+
+import io.jsonwebtoken.security.Keys;
 
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.security.Key;
+import java.util.Date;
 
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "coreflow-secret-key";
+    private static final String SECRET_KEY =
+            "mysecretkeymysecretkeymysecretkey12";
+
+    private Key getSignKey() {
+
+        return Keys.hmacShaKeyFor(
+                SECRET_KEY.getBytes()
+        );
+    }
 
     public String generateToken(String email) {
 
-        Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
-
-        return JWT.create()
-                .withSubject(email)
-                .withExpiresAt(
-                        Instant.now().plus(2, ChronoUnit.HOURS)
+        return Jwts
+                .builder()
+                .setSubject(email)
+                .setIssuedAt(new Date())
+                .setExpiration(
+                        new Date(
+                                System.currentTimeMillis()
+                                        + 1000 * 60 * 60
+                        )
                 )
-                .sign(algorithm);
+                .signWith(
+                        getSignKey(),
+                        SignatureAlgorithm.HS256
+                )
+                .compact();
+    }
+
+    public Claims extractClaims(String token) {
+
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(getSignKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
