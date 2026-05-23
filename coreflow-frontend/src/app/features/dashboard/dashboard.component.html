@@ -1,0 +1,184 @@
+<mat-toolbar color="primary">
+  <span>CoreFlow Finance</span>
+  <span style="flex: 1;"></span>
+  <button mat-button (click)="logout()">
+    <mat-icon>logout</mat-icon> Sair
+  </button>
+</mat-toolbar>
+
+<div class="dashboard-container">
+
+  @if (loading()) {
+    <div class="loading-center">
+      <mat-spinner diameter="48" />
+    </div>
+  }
+
+  @if (summary(); as s) {
+
+    <!-- Alerta -->
+    @if (s.alert) {
+      <mat-card class="alert-card" [class]="'alert-' + s.alert.level.toLowerCase()">
+        <mat-card-content>
+          <div class="alert-row">
+            <mat-icon>{{ s.alert.level === 'OK' ? 'check_circle' : 'warning' }}</mat-icon>
+            <span>{{ s.alert.message }}</span>
+            <mat-chip [color]="alertColor(s.alert.level)" selected>
+              {{ s.alert.usagePercent | number:'1.0-0' }}% da receita
+            </mat-chip>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- Métricas -->
+    <div class="metrics-grid">
+      <mat-card class="metric-card income">
+        <mat-card-content>
+          <p class="metric-label">Receitas</p>
+          <p class="metric-value">{{ s.totalIncome | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="metric-card expense">
+        <mat-card-content>
+          <p class="metric-label">Despesas</p>
+          <p class="metric-value">{{ s.totalExpense | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="metric-card" [class.positive]="s.balance >= 0" [class.negative]="s.balance < 0">
+        <mat-card-content>
+          <p class="metric-label">Saldo</p>
+          <p class="metric-value">{{ s.balance | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+
+  <mat-divider style="margin: 1.5rem 0;" />
+
+  <!-- Formulário nova transação -->
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>Nova Transação</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="tx-form">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Descrição</mat-label>
+          <input matInput formControlName="description" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Valor</mat-label>
+          <input matInput formControlName="amount" type="number" step="0.01" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo</mat-label>
+          <mat-select formControlName="type">
+            @for (t of types; track t.value) {
+              <mat-option [value]="t.value">{{ t.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Categoria</mat-label>
+          <mat-select formControlName="category">
+            @for (c of categories; track c.value) {
+              <mat-option [value]="c.value">{{ c.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Data</mat-label>
+          <input matInput formControlName="date" type="date" />
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading()">
+          Adicionar
+        </button>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-divider style="margin: 1.5rem 0;" />
+
+  <!-- Tabela de transações -->
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Transações</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+
+      @if (loadingTx()) {
+        <div class="loading-center"><mat-spinner diameter="32" /></div>
+      }
+
+      @if (!loadingTx() && transactions().length === 0) {
+        <p class="empty-state">Nenhuma transação registrada ainda.</p>
+      }
+
+      @if (transactions().length > 0) {
+        <table mat-table [dataSource]="transactions()" class="tx-table">
+
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Descrição</th>
+            <td mat-cell *matCellDef="let row">{{ row.description }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Tipo</th>
+            <td mat-cell *matCellDef="let row">
+              <mat-chip [color]="row.type === 'INCOME' ? 'primary' : 'warn'" selected>
+                {{ row.type === 'INCOME' ? 'Receita' : 'Despesa' }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="category">
+            <th mat-header-cell *matHeaderCellDef>Categoria</th>
+            <td mat-cell *matCellDef="let row">{{ categoryLabel(row.category) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef>Valor</th>
+            <td mat-cell *matCellDef="let row" [class.income-value]="row.type === 'INCOME'" [class.expense-value]="row.type === 'EXPENSE'">
+              {{ row.amount | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Data</th>
+            <td mat-cell *matCellDef="let row">{{ row.date }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="createdBy">
+            <th mat-header-cell *matHeaderCellDef>Por</th>
+            <td mat-cell *matCellDef="let row">{{ row.createdBy }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-icon-button color="warn" (click)="deleteTransaction(row.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        </table>
+      }
+
+    </mat-card-content>
+  </mat-card>
+
+</div>

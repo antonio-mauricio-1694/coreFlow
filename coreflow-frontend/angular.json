@@ -54,17 +54,10 @@
               }
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/azure-blue.css",
               "src/styles.scss"
             ],
-            "scripts": [],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "security": {
-              "allowedHosts": []
-            },
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -121,12 +114,16 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
-            ],
+  "@angular/material/prebuilt-themes/indigo-pink.css",
+  "src/styles.scss"
+],
             "scripts": []
           }
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "b82b9ef4-45d6-4bc0-961c-caaa8fb7c3c6"
   }
 }

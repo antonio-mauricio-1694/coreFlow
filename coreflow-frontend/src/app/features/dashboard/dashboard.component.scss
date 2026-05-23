@@ -1,0 +1,87 @@
+.dashboard-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.metric-card {
+  text-align: center;
+
+  .metric-label {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+  }
+
+  .metric-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0.5rem 0 0;
+  }
+
+  &.income .metric-value { color: #2e7d32; }
+  &.expense .metric-value { color: #c62828; }
+  &.positive .metric-value { color: #1565c0; }
+  &.negative .metric-value { color: #b71c1c; }
+}
+
+.alert-card {
+  margin-bottom: 1.5rem;
+
+  .alert-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    mat-icon { font-size: 1.4rem; }
+    span { flex: 1; }
+  }
+
+  &.alert-ok { border-left: 4px solid #2e7d32; }
+  &.alert-warning { border-left: 4px solid #f9a825; }
+  &.alert-danger { border-left: 4px solid #e65100; }
+  &.alert-critical { border-left: 4px solid #b71c1c; }
+}
+
+.form-card {
+  margin-bottom: 1rem;
+}
+
+.tx-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  align-items: start;
+  padding-top: 1rem;
+
+  button {
+    height: 56px;
+    align-self: start;
+  }
+}
+
+.tx-table {
+  width: 100%;
+}
+
+.income-value { color: #2e7d32; font-weight: 600; }
+.expense-value { color: #c62828; font-weight: 600; }
+
+.empty-state {
+  text-align: center;
+  color: #999;
+  padding: 2rem;
+}
