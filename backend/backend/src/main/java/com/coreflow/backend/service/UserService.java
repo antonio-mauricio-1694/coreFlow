@@ -4,7 +4,6 @@ import com.coreflow.backend.domain.User;
 import com.coreflow.backend.dto.UserRequestDTO;
 import com.coreflow.backend.dto.UserResponseDTO;
 import com.coreflow.backend.repository.UserRepository;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +17,12 @@ public class UserService {
 
     public UserService(
             UserRepository userRepository,
-            BCryptPasswordEncoder passwordEncoder
-    ) {
+            BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     public List<UserResponseDTO> findAll() {
-
         return userRepository.findAll()
                 .stream()
                 .map(user -> new UserResponseDTO(
@@ -36,22 +33,26 @@ public class UserService {
                 .toList();
     }
 
-    public User save(UserRequestDTO dto) {
+    public UserResponseDTO create(UserRequestDTO dto) {
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new RuntimeException("Email já cadastrado");
+        }
 
         User user = new User();
-
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
-        user.setPassword(
-                passwordEncoder.encode(dto.getPassword())
+        User saved = userRepository.save(user);
+
+        return new UserResponseDTO(
+                saved.getId(),
+                saved.getName(),
+                saved.getEmail()
         );
-
-        return userRepository.save(user);
     }
 
     public UserResponseDTO findById(Long id) {
-
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 

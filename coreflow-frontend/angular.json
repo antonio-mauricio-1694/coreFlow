@@ -114,9 +114,9 @@
               }
             ],
             "styles": [
-  "@angular/material/prebuilt-themes/indigo-pink.css",
-  "src/styles.scss"
-],
+              "@angular/material/prebuilt-themes/indigo-pink.css",
+               "src/styles.scss"
+            ],
             "scripts": []
           }
         }
