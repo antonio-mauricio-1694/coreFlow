@@ -11,19 +11,22 @@ public class FinancialSummaryDTO {
     private BigDecimal balance;
     private Map<String, BigDecimal> expenseByCategory;
     private Map<String, BigDecimal> incomeByCategory;
+    private AlertDTO alert;
 
     public FinancialSummaryDTO(Long householdId,
                                BigDecimal totalIncome,
                                BigDecimal totalExpense,
                                BigDecimal balance,
                                Map<String, BigDecimal> expenseByCategory,
-                               Map<String, BigDecimal> incomeByCategory) {
+                               Map<String, BigDecimal> incomeByCategory,
+                               AlertDTO alert) {
         this.householdId = householdId;
         this.totalIncome = totalIncome;
         this.totalExpense = totalExpense;
         this.balance = balance;
         this.expenseByCategory = expenseByCategory;
         this.incomeByCategory = incomeByCategory;
+        this.alert = alert;
     }
 
     public Long getHouseholdId() { return householdId; }
@@ -32,4 +35,5 @@ public class FinancialSummaryDTO {
     public BigDecimal getBalance() { return balance; }
     public Map<String, BigDecimal> getExpenseByCategory() { return expenseByCategory; }
     public Map<String, BigDecimal> getIncomeByCategory() { return incomeByCategory; }
+    public AlertDTO getAlert() { return alert; }
 }
